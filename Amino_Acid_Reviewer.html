@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Amino Acid Classification & Metabolism Reviewer</title>
+<style>
+:root{box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);--bg:#fff;--ink:#4a4a4a;--mute:#8a8a8a;--line:#d9d9d9;--soft:#f3f3f3;--acc:#5f5f5f}
+*{box-sizing:border-box}html{scroll-padding-top:env(safe-area-inset-top,0px)}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.6 "Segoe UI",system-ui,-apple-system,Helvetica,Arial,sans-serif}
+header{max-width:820px;margin:0 auto;padding:28px 18px 8px}
+h1{font-size:1.6rem;margin:0;font-weight:600;color:#3d3d3d}header p{margin:4px 0 0;color:var(--mute);font-size:.92rem}
+nav{max-width:820px;margin:14px auto 0;padding:0 18px;display:flex;gap:6px;border-bottom:1px solid var(--line)}
+nav button{background:none;border:0;padding:10px 14px;font:inherit;color:var(--mute);cursor:pointer;border-bottom:2px solid transparent;margin-bottom:-1px}
+nav button.on{color:#333;border-color:#666;font-weight:600}
+main{max-width:820px;margin:0 auto;padding:18px}
+button:focus-visible,input:focus-visible,select:focus-visible{outline:2px solid #888;outline-offset:2px}
+input,select{font:inherit;color:var(--ink);border:1px solid var(--line);border-radius:6px;padding:9px 11px;background:#fff;width:100%}
+.bar{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px}.bar>*{flex:1 1 180px}
+.btn{font:inherit;background:#fff;border:1px solid #aaa;color:#444;padding:9px 16px;border-radius:6px;cursor:pointer}
+.btn:hover{background:var(--soft)}.btn.p{background:#666;color:#fff;border-color:#666}.btn.p:hover{background:#4d4d4d}
+details{border:1px solid var(--line);border-radius:8px;margin:8px 0;background:#fff}
+summary{cursor:pointer;padding:12px 14px;display:flex;justify-content:space-between;gap:10px;font-weight:600;color:#3d3d3d;list-style:none}
+summary::-webkit-details-marker{display:none}summary small{font-weight:400;color:var(--mute)}
+.body{padding:0 14px 14px;border-top:1px solid var(--soft)}.body p{margin:10px 0 0}.body .k{color:var(--mute);font-size:.85rem}
+.q{border:1px solid var(--line);border-radius:8px;padding:16px;margin-bottom:12px}.q h3{margin:0 0 10px;font-size:1rem;font-weight:600;color:#3d3d3d}
+.opt{display:block;width:100%;text-align:left;font:inherit;background:#fff;border:1px solid var(--line);border-radius:6px;padding:10px 12px;margin:6px 0;cursor:pointer;color:var(--ink)}
+.opt:hover:not(:disabled){background:var(--soft)}.opt.ok{border-color:#555;background:#ececec;font-weight:600}.opt.no{border-style:dashed;color:var(--mute);text-decoration:line-through}
+.fb{margin-top:10px;font-size:.92rem;color:var(--mute)}.score{font-size:1.2rem;margin:14px 0;color:#333}
+.meta{color:var(--mute);font-size:.88rem;margin-bottom:10px}
+.hide{display:none}
+.seg{display:inline-flex;border:1px solid #aaa;border-radius:6px;overflow:hidden;flex:0 0 auto}.seg button{font:inherit;background:#fff;border:0;padding:9px 14px;color:#444;cursor:pointer}.seg button.on{background:#666;color:#fff}
+.lg{list-style:none;margin:14px 0 0;padding:0;display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:6px 14px}
+.lg li{display:flex;align-items:center;gap:8px;padding:6px 8px;border:1px solid var(--soft);border-radius:6px}.lg li.hi{background:var(--soft);border-color:var(--line)}
+.lg .n{flex:0 0 24px;height:24px;border-radius:50%;background:#4d4d4d;color:#fff;font-size:12px;font-weight:600;text-align:center;line-height:24px}
+.lg select{padding:6px 8px;flex:1;min-width:0}.lg li.ok{border-color:#3f7d4f;background:#f1f8f3}.lg li.bad{border-color:#a33;background:#fbf1f1}
+</style></head><body>
+<header><h1>Amino Acid Classification &amp; Metabolism</h1><p>Interactive Reviewer based on Lecture Slides</p></header>
+<nav><button class="on" data-t="info">Information</button><button data-t="quiz">Quiz</button><button data-t="id">Identification</button><button data-t="lab">Matching</button></nav>
+<main>
+<section id="info"><div class="bar"><input id="s" type="search" placeholder="Search a term or keyword" aria-label="Search"><select id="g" aria-label="Topic"></select></div><div class="meta" id="cnt"></div><div id="list"></div></section>
+<section id="quiz" class="hide"><div class="bar"><select id="qg" aria-label="Quiz topic"></select><select id="qn" aria-label="Length"><option>10</option><option>20</option><option value="999">All</option></select><button class="btn p" id="qs" style="flex:0 0 auto">Start quiz</button></div><div id="qa"></div></section>
+<section id="id" class="hide"><div class="bar"><select id="ig" aria-label="Topic"></select><button class="btn p" id="is" style="flex:0 0 auto">New round</button></div><div id="ia"></div></section>
+<section id="lab" class="hide"><div class="bar"><select id="lg" aria-label="Topic"></select><span class="seg" id="lmode"><button data-m="study" class="on">Study</button><button data-m="test">Test</button></span><button class="btn" id="lsh" style="flex:0 0 auto">Shuffle</button></div><div id="la"></div></section>
+</main>
+<script>
+const T=[
+["Phenylalanine","Non-polar AA","Aromatic amino acid precursor for tyrosine, dopamine, norepinephrine, epinephrine, and melanin.","Deficiency in phenylalanine hydroxylase causes phenylketonuria (PKU)."],
+["Tryptophan","Non-polar AA","Aromatic amino acid precursor for serotonin, melatonin, and niacin.","Fructose malabsorption impairs tryptophan absorption in the intestine, lowering blood levels."],
+["Alanine","Non-polar AA","Aliphatic amino acid synthesized from pyruvate and branched-chain AA; key in glucose-alanine cycle.","Transfers pyruvate and glutamate safely from muscle to liver. Alterations elevate ALT in Type II diabetes."],
+["Valine","Non-polar AA","Aliphatic amino acid essential for hematopoietic stem cell (HSC) self-renewal.","Replaces glutamic acid in β-globin in sickle-cell disease due to hydrophobic interactions."],
+["Leucine","Non-polar AA","Ketogenic aliphatic amino acid yielding acetyl-CoA and acetoacetate.","Deficiency in branched-chain α-keto acid dehydrogenase complex leads to Maple Syrup Urine Disease (MSUD)."],
+["Isoleucine","Non-polar AA","Aliphatic amino acid involved in wound healing, nitrogen detoxification, and immune stimulation.","A branched-chain amino acid essential for hormone secretion."],
+["Methionine","Non-polar AA","Sulfur-containing amino acid substrate for cysteine, taurine, SAM, and glutathione.","Accumulation of homocysteine from improper conversion can lead to atherosclerosis."],
+["Threonine","Polar Uncharged AA","Polar uncharged amino acid undergoing O-linked glycosylation and phosphorylation.","Phosphothreonine plays a critical role in cell signal transduction and neural activity."],
+["Histidine","Polar Charged AA","Basic amino acid precursor for histamine, essential in inflammation.","Converted to ammonia and urocanic acid by histidine ammonia-lyase; deficiency causes histidinemia."],
+["Lysine","Polar Charged AA","Basic amino acid whose ε-amino group forms hydrogen bonds, salt bridges, and Schiff bases.","Plays key roles in epigenetics (histone modification) and connective tissue structure; excess causes hyperlysinaemia."],
+["Pepsinogen","Protein Digestion","Inactive zymogen secreted by gastric chief cells.","Activated to pepsin by hydrochloric acid (HCl) at pH 1.8-3.5."],
+["Pepsin","Protein Digestion","Active gastric protease that cleaves peptide bonds at the carboxylic side of aromatic amino acids.","Operates in highly acidic conditions in the stomach."],
+["Cholecystokinin (CCK)","Digestive Hormones","Gut hormone released after a meal to stimulate digestive enzymes and reduce appetite.","Triggers release of zymogens into the intestinal duodenum."],
+["Secretin","Digestive Hormones","Hormone regulating gastric acid secretion, pancreatic bicarbonate, and osmoregulation.","Stimulated by acidic chyme entering the duodenum."],
+["GIP","Digestive Hormones","Glucose-dependent insulinotropic polypeptide that inhibits gastric secretion and motility.","Belongs to the secretin family of hormones."],
+["Trypsin","Protein Digestion","Endopeptidase that cleaves peptide bonds at the carboxy side of Lysine and Arginine.","Activated from trypsinogen by enterokinase (enteropeptidase)."],
+["Chymotrypsin","Protein Digestion","Protease that cleaves peptide bonds adjacent to Trp, Tyr, and Phe residues.","Activated from chymotrypsinogen by trypsin."],
+["Enterocyte Brush Border","Absorption","Intestinal epithelial border containing aminopeptidases and dipeptidases.","Breaks down oligopeptides into free amino acids, dipeptides, and tripeptides for absorption."],
+["Transamination","Metabolism","Process of transferring an amino group from an amino acid to an acceptor keto-acid.","Requires pyridoxal phosphate (PLP) as a coenzyme."],
+["Oxidative Deamination","Metabolism","Conversion of an amino acid into a corresponding keto acid by removing amine as free ammonia.","Replaces the amine group with a ketone oxygen."],
+["ALT","Metabolism","Alanine aminotransferase, an enzyme involved in the glucose-alanine cycle.","Elevated plasma levels are associated with liver damage and Type II diabetes."],
+["AST","Metabolism","Aspartate aminotransferase, found mostly in liver and muscle tissue.","Released into the bloodstream upon cellular injury or liver damage."]
+];
+
+const $=id=>document.getElementById(id),shuf=a=>a.map(x=>[Math.random(),x]).sort((a,b)=>a[0]-b[0]).map(x=>x[1]);
+const G=[...new Set(T.map(t=>t[1]))];
+["g","qg","ig","lg"].forEach(i=>{$(i).innerHTML='<option value="">All topics</option>'+G.map(g=>`<option>${g}</option>`).join("")});
+const pool=g=>g?T.filter(t=>t[1]===g):T;
+
+document.querySelectorAll("nav button").forEach(b=>b.onclick=()=>{document.querySelectorAll("nav button").forEach(x=>x.classList.toggle("on",x===b));["info","quiz","id","lab"].forEach(s=>$(s).classList.toggle("hide",s!==b.dataset.t))});
+
+function render(){
+  const q=$("s").value.toLowerCase(),g=$("g").value;
+  const r=T.filter(t=>(!g||t[1]===g)&&(t.join(" ").toLowerCase().includes(q)));
+  $("cnt").textContent=r.length+" of "+T.length+" terms";
+  $("list").innerHTML=r.map(t=>`<details><summary>${t[0]}<small>${t[1]}</small></summary><div class="body"><p>${t[2]}</p><p class="k">Go deeper: ${t[3]}</p></div></details>`).join("")||'<p class="meta">No match. Try another keyword.</p>';
+}
+$("s").oninput=render;$("g").onchange=render;render();
+
+let Q=[],qi=0,sc=0;
+$("qs").onclick=()=>{
+  const p=pool($("qg").value);
+  if(p.length<4){$("qa").innerHTML='<p class="meta">Pick a topic with at least 4 terms.</p>';return}
+  Q=shuf(p).slice(0,+$("qn").value);qi=0;sc=0;showQ();
+};
+
+function showQ(){
+  if(qi>=Q.length){
+    $("qa").innerHTML=`<div class="score">Final Score: <strong>${sc} / ${Q.length}</strong> (${Math.round(sc/Q.length*100)}%)</div><button class="btn p" onclick="$('qs').click()">Restart</button>`;
+    return;
+  }
+  const curr=Q[qi];
+  const opts=shuf([curr,...shuf(T.filter(x=>x[0]!==curr[0])).slice(0,3)]);
+  $("qa").innerHTML=`<div class="q"><h3>Question ${qi+1} of ${Q.length}: ${curr[2]}</h3>
+    ${opts.map(o=>`<button class="opt" onclick="ansQ('${o[0]}','${curr[0]}',this)">${o[0]}</button>`).join("")}
+    <div class="fb" id="qfb"></div></div>`;
+}
+
+window.ansQ=(sel,cor,el)=>{
+  document.querySelectorAll(".opt").forEach(b=>{b.disabled=true;if(b.textContent===cor)b.classList.add("ok");else if(b.textContent===sel)b.classList.add("no");});
+  if(sel===cor){sc++;$("qfb").textContent="Correct!";}else{$("qfb").textContent=`Incorrect. Correct answer: ${cor}`;}
+  setTimeout(()=>{qi++;showQ();},1600);
+};
+
+let IDP=[],idi=0,idsc=0;
+$("is").onclick=()=>{
+  IDP=shuf(pool($("ig").value));idi=0;idsc=0;showID();
+};
+
+function showID(){
+  if(idi>=IDP.length){
+    $("ia").innerHTML=`<div class="score">Identification Score: <strong>${idsc} / ${IDP.length}</strong></div><button class="btn p" onclick="$('is').click()">Try Again</button>`;
+    return;
+  }
+  const curr=IDP[idi];
+  $("ia").innerHTML=`<div class="q"><h3>Clue: ${curr[2]}</h3><input type="text" id="idin" placeholder="Type term name..."><button class="btn p" style="margin-top:10px" onclick="chkID('${curr[0]}')">Submit</button><div class="fb" id="idfb"></div></div>`;
+}
+
+window.chkID=(cor)=>{
+  const val=$("idin").value.trim().toLowerCase();
+  if(val===cor.toLowerCase()){idsc++;$("idfb").textContent="Correct!";}else{$("idfb").textContent=`Incorrect. Answer was: ${cor}`;}
+  setTimeout(()=>{idi++;showID();},1600);
+};
+
+$("lg").onchange=()=>renderLab();
+$("lsh").onclick=()=>renderLab();
+document.querySelectorAll("#lmode button").forEach(b=>b.onclick=()=>{document.querySelectorAll("#lmode button").forEach(x=>x.classList.remove("on"));b.classList.add("on");renderLab();});
+
+function renderLab(){
+  const p=pool($("lg").value);
+  const isTest=document.querySelector("#lmode .on").dataset.m==="test";
+  const terms=shuf(p).slice(0,10);
+  const choices=shuf([...terms]);
+  $("la").innerHTML=`<ul class="lg">${terms.map((t,idx)=>`<li><span class="n">${idx+1}</span><div style="flex:1"><div style="font-size:0.85rem">${t[2]}</div>${isTest?`<select data-ans="${t[0]}"><option value="">-- Select --</option>${choices.map(c=>`<option>${c[0]}</option>`).join("")}</select>`:`<strong>${t[0]}</strong>`}</div></li>`).join("")}</ul>${isTest?'<button class="btn p" style="margin-top:14px" onclick="chkLab()">Check Answers</button>':''}`;
+}
+
+window.chkLab=()=>{
+  document.querySelectorAll(".lg li").forEach(li=>{
+    const sel=li.querySelector("select");
+    if(sel){
+      if(sel.value===sel.dataset.ans) li.className="ok"; else li.className="bad";
+    }
+  });
+};
+</script></body></html>
